@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-22.04
 
     env:
-      ANDROID_HOME: ${{ runner.home }}/android-sdk
-      PATH: ${{ runner.home }}/android-sdk/cmdline-tools/latest/bin:${{ runner.home }}/android-sdk/platform-tools:${{ runner.home }}/android-sdk/build-tools/33.0.2:$PATH
+      ANDROID_HOME: $HOME/android-sdk
+      PATH: $HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/build-tools/33.0.2:$PATH
 
     steps:
     - name: Checkout repository
@@ -44,7 +44,7 @@ jobs:
         cd $ANDROID_HOME
         wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
         unzip commandlinetools-linux-9477386_latest.zip -d cmdline-tools
-        mv cmdline-tools/cmdline-tools cmdline-tools/latest
+        mv cmdline-tools/cmdline-tools cmdline-tools/latest || true
         yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
         $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
           "platform-tools" \
@@ -75,4 +75,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: guessmath-apk
-        path: bin/*.apk
+        path: ./.buildozer/android/platform/build-arm64-v8a/dists/*/bin/*.apk
