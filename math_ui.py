@@ -10,7 +10,7 @@ from kivy.core.window import Window
 from game_engine import GameEngine
 
 # Set window size (for testing on desktop)
-Window.size = (650, 480)
+#Window.size = (650, 480)
 
 class MathGuessUI(BoxLayout):
     def __init__(self, **kwargs):
@@ -117,13 +117,13 @@ class MathGuessUI(BoxLayout):
         correct = self.engine.check_guess(guess)
         self.score_label.text = f"Score: {self.engine.score}"
         if correct:
-            self.feedback_label.text = "Correct! 🎉"
+            self.feedback_label.text = "Correct!"
             Clock.schedule_once(lambda dt: self.load_new_equation(), 0.5)
         else:
             if self.engine.game_over:
                 self.end_game()
             else:
-                self.feedback_label.text = "Wrong! ❌"
+                self.feedback_label.text = "Wrong!"
                 self.attempts_label.text = f"Attempts Left: {self.engine.attempts_left}"
 
     def update_timer(self, dt):

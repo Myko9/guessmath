@@ -27,19 +27,15 @@ android.ndk_api = 21
 # Architectures
 android.archs = arm64-v8a, armeabi-v7a
 
-# SDK / NDK (let buildozer manage them)
-# DO NOT duplicate these anywhere else
-android.sdk = 33
-android.ndk = 25b
-
 # Output format
 android.debug_artifact = apk
 
 # Bootstrap
 p4a.bootstrap = sdl2
 
-# Permissions (optional, safe default)
-android.permissions = INTERNET
+# Permissions
+# (No permissions required — offline app)
+android.permissions =
 
 # Allow backup
 android.allow_backup = True
