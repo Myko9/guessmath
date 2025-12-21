@@ -13,67 +13,62 @@ jobs:
       PATH: $HOME/android-sdk/cmdline-tools/latest/bin:$HOME/android-sdk/platform-tools:$HOME/android-sdk/build-tools/33.0.2:$PATH
 
     steps:
-    - name: Checkout repository
-  uses: actions/checkout@v3
-  with:
-    archive-format: zip
+      # ✅ FIXED CHECKOUT (ZIP, NO TAR)
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          archive-format: zip
 
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.10'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
 
-    - name: Install system dependencies
-      run: |
-        sudo apt update
-        sudo apt install -y \
-          git \
-          tar \
-          zip \
-          unzip \
-          openjdk-17-jdk \
-          python3-pip \
-          python3-setuptools \
-          libffi-dev \
-          libssl-dev \
-          build-essential \
-          libncurses5 \
-          libstdc++6 \
-          wget
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y \
+            git \
+            tar \
+            zip \
+            unzip \
+            openjdk-17-jdk \
+            python3-pip \
+            python3-setuptools \
+            libffi-dev \
+            libssl-dev \
+            build-essential \
+            libncurses5 \
+            libstdc++6 \
+            wget
 
-    - name: Install Android SDK command line tools
-      run: |
-        mkdir -p $ANDROID_HOME/cmdline-tools
-        cd $ANDROID_HOME
-        wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
-        unzip -q commandlinetools-linux-9477386_latest.zip -d cmdline-tools
-        # Detect folder inside zip and rename to 'latest'
-        FOLDER=$(ls cmdline-tools)
-        mv cmdline-tools/$FOLDER cmdline-tools/latest
-        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
-        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
-          "platform-tools" \
-          "platforms;android-33" \
-          "build-tools;33.0.2"
+      - name: Install Android SDK command line tools
+        run: |
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          cd $ANDROID_HOME
+          wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip
+          unzip -q commandlinetools-linux-9477386_latest.zip -d cmdline-tools
+          mv cmdline-tools/cmdline-tools cmdline-tools/latest
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager \
+            "platform-tools" \
+            "platforms;android-33" \
+            "build-tools;33.0.2"
 
-    - name: Install Buildozer and dependencies
-      run: |
-        pip install --upgrade pip
-        pip install buildozer cython
+      - name: Install Buildozer and dependencies
+        run: |
+          pip install --upgrade pip
+          pip install buildozer cython
 
-    - name: Ensure Buildozer configuration
-      run: |
-        echo "p4a.source_dir = $HOME/python-for-android" >> buildozer.spec
-        echo "android.sdk_path = $ANDROID_HOME" >> buildozer.spec
-        echo "android.ndk_path = $ANDROID_HOME/ndk" >> buildozer.spec
-        echo "android.private_storage = True" >> buildozer.spec
+      # ❌ DO NOT APPEND TO buildozer.spec (prevents duplicate keys)
+      # Buildozer will auto-detect SDK paths
 
-    - name: Build APK
-      run: |
-        buildozer android debug
+      - name: Build APK
+        run: |
+          buildozer android debug
 
-    - name: Upload APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: guessmath-apk
-        path: ./.buildozer/android/platform/build-arm64-v8a/dists/*/bin/*.apk
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: guessmath-apk
+          path: ./.buildozer/android/platform/build-*/dists/*/bin/*.apk
